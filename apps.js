@@ -4,70 +4,65 @@ const modalContainer = document.getElementById("modal-container");
 const showAlert = document.getElementById("showAlert");
 const cantidadCarrito = document.getElementById("cantidadCarrito");
 
+
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-productos.forEach((product) => {
-  let content = document.createElement("div");
-  content.className = "card";
-  content.innerHTML = `
-    <img src="${product.img}">
-    <h3>${product.nombre}</h3>
-    <p class="price">${product.precio} $</p>
-  `;
+/* La funcion que sigue es la que lee los productos del json y llama a la  funcion cargarProductos*/
+const Productos = () =>{
+  fetch('../data.json')
+    .then(response => response.json())
+    .then (response => cargarProductos(response))
+    .catch(err => console.error(err));
+}
 
-  shopContent.append(content);
+/* Esta funcion se encarga de recibir el resultado de la funcion Productos para renderizarlos en el DOM */
 
-  let comprar = document.createElement("button");
-  comprar.innerText = "comprar";
-  comprar.className = "comprar";
+const cargarProductos = (a) =>{
+    a.forEach((product) => {
+    let content = document.createElement("div");
+    content.className = "card";
+    content.innerHTML = `
+      <img src="${product.img}">
+      <h3>${product.nombre}</h3>
+      <p class="price">${product.precio} $</p>
+    `;
 
-  content.append(comprar);
+    shopContent.append(content);
 
-  comprar.addEventListener("click", () => {
-    const repeat = carrito.some((repeatProduct) => repeatProduct.id === product.id);
+    let comprar = document.createElement("button");
+    comprar.innerText = "comprar";
+    comprar.className = "comprar";
 
-    if (repeat) {
-      carrito.map((prod) => {
-        if (prod.id === product.id) {
-          prod.cantidad++;
-        }
-      });
-    } else {
-      carrito.push({
-        id: product.id,
-        img: product.img,
-        nombre: product.nombre,
-        precio: product.precio,
-        cantidad: product.cantidad,
-      });
-      console.log(carrito);
-      console.log(carrito.length);
-      carritoCounter();
-      saveLocal();
-    }
+    content.append(comprar);
+
+    comprar.addEventListener("click", () => {
+      const repeat = carrito.some((repeatProduct) => repeatProduct.id === product.id);
+
+      if (repeat) {
+        carrito.map((prod) => {
+          if (prod.id === product.id) {
+            prod.cantidad++;
+          }
+        });
+      } else {
+        carrito.push({
+          id: product.id,
+          img: product.img,
+          nombre: product.nombre,
+          precio: product.precio,
+          cantidad: product.cantidad,
+        });
+        console.log(carrito);
+        console.log(carrito.length);
+        carritoCounter();
+        saveLocal();
+      }
+    });
   });
-});
+}
+
 
 //set item
 const saveLocal = () => {
   localStorage.setItem("carrito", JSON.stringify(carrito));
 };
-//get item
-
-
-let arr = [];
-
-const mostrarDatos = (a) =>{
-  a.forEach(element => {
-    console.log(element)
-  })
-}
-
-const consumirApi = () => {
-  fetch('./data.json')
-.then(response => response.json())
-.then(response => console.log(response))
-}
-
-consumirApi()
-
